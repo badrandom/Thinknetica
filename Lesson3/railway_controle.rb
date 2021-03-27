@@ -133,7 +133,7 @@ class Route
   end
 
   def print_stations
-    @stations.each { |station| print station.name }
+    @stations.each { |station| print "#{station.name}, " }
   end
 end
 
