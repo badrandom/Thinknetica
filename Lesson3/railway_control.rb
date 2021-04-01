@@ -2,43 +2,46 @@
 
 class Station
 
-  attr_reader :trains_in_queue, :num_of_cargo_trains, :num_of_passenger_trains, :name
+  attr_reader :trains, :num_of_cargo_trains, :num_of_passenger_trains, :name
 
   def initialize(name)
     @name = name
-    @num_of_passenger_trains = 0
-    @num_of_cargo_trains = 0
-    @trains_in_queue = []
+    @trains = []
   end
 
   def add_train(train)
-    @trains_in_queue << train
-    @num_of_passenger_trains += 1 if train.type == 'passenger'
-    @num_of_cargo_trains += 1 if train.type == 'cargo'
+    @trains << train
   end
 
   def send_train(train)
-    if train.type == 'passenger'
-      @num_of_passenger_trains -= 1
-    else
-      @num_of_cargo_trains -= 1
-    end
-    trains_in_queue.delete(train)
+    trains.delete(train)
   end
+
+  def types
+    types = {passenger: 0, cargo: 0}
+    trains.each do |train|
+      if train.type == "passenger"
+        types[:passenger] += 1
+      else
+        types[:cargo] += 1
+      end
+    end
+    types
+  end
+
 end
 
 class Train
-  attr_reader :current_speed, :num_of_wagons, :current_station, :type
+  attr_reader :num_of_wagons, :current_station, :type
+  attr_accessor :current_speed
   @current_route
 
-  def initialize(number = "unknown", type = "unknown", num_of_wagons = 0)
+  def initialize(number, type, num_of_wagons = 0)
     @number = number
     @type = type
     @num_of_wagons = num_of_wagons
-    stop
+    @current_speed = 0
   end
-
-
 
   def add_wagon
     if @current_speed == 0
@@ -64,33 +67,20 @@ class Train
   end
 
   def move_forward
-    if @current_route.stations.size - 1 != @current_station_index
-      @current_station.send_train(self)
-      start_moving #Ну, зачем-то же надо было их делать
-      stop
+    return unless next_station
+      current_station.send_train(self)
       @current_station_index += 1
-      check_current_station
-      @current_station.add_train(self)
-    else
-      'Error'
-    end
+      current_station.add_train(self)
   end
 
   def move_back
-    if @current_station_index > 0
+    return unless previous_station
       @current_station.send_train(self)
-      start_moving
-      stop
       @current_station_index -= 1
-      check_current_station
-      @current_station.add_train(self)
-    else
-      'Error'
-    end
+      current_station.add_train(self)
   end
 
   def next_station
-    @current_route.stations[@current_station_index + 1]
     if @current_station_index <= @current_route.stations.size + 1
       @current_route.stations[@current_station_index + 1]
     end
@@ -102,19 +92,8 @@ class Train
     end
   end
 
-  private
-  def check_current_station
+  def current_station
     @current_station = @current_route.stations[@current_station_index]
-  end
-
-  def start_moving
-    @current_speed = 150 #km/h. Не совсем понятно, что значит 'умеет набирать скорость'.
-    # Я бы использовал сеттер, но тогда он сможет не набирать, а устанавливать скорость. Так же в этом случае теряется смысл метода stop.
-    # Предположим, что именно такая реализация необходима в программе, а 150 km/h - разрешенная скорость.
-  end
-
-  def stop
-    @current_speed = 0
   end
 end
 
@@ -153,6 +132,9 @@ puts "'Move back' to move back"
 puts "Current: #{my_train.current_station.name}"
 puts "Previous: #{my_train.previous_station.name if my_train.previous_station.instance_of?(Station)}"
 puts "Next: #{my_train.next_station.name if my_train.next_station.instance_of?(Station)}"
+puts "Cargo trains on #{my_train.current_station.name}: #{my_train.current_station.types[:cargo]}"
+puts "Passenger trains on #{my_train.current_station.name}: #{my_train.current_station.types[:passenger]}"
+
 loop do
   puts "Enter command"
 
@@ -163,11 +145,15 @@ loop do
     puts "Current: #{my_train.current_station.name}"
     puts "Previous: #{my_train.previous_station.name if my_train.previous_station.instance_of?(Station)}"
     puts "Next: #{my_train.next_station.name if my_train.next_station.instance_of?(Station)}"
+    puts "Cargo trains on #{my_train.current_station.name}: #{my_train.current_station.types[:cargo]}"
+    puts "Passenger trains on #{my_train.current_station.name}: #{my_train.current_station.types[:passenger]}"
   when 'Move back'
     my_train.move_back
     puts "Current: #{my_train.current_station.name}"
     puts "Previous: #{my_train.previous_station.name if my_train.previous_station.instance_of?(Station)}"
     puts "Next: #{my_train.next_station.name if my_train.next_station.instance_of?(Station)}"
+    puts "Cargo trains on #{my_train.current_station.name}: #{my_train.current_station.types[:cargo]}"
+    puts "Passenger trains on #{my_train.current_station.name}: #{my_train.current_station.types[:passenger]}"
   when 'Stop'
     break
   end
