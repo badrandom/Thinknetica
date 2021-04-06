@@ -79,7 +79,7 @@ class PassengerTrain < Train
   end
 
   def add_wagon(wagon)
-    super(wagon) if wagon.instance_of?(PassengerWagon)
+    super(wagon) if wagon.type == 'Passenger'
   end
 
   def type
@@ -94,7 +94,7 @@ class CargoTrain < Train
   end
 
   def add_wagon(wagon)
-    super(wagon) if wagon.instance_of?(CargoWagon)
+    super(wagon) if wagon.type == 'Cargo'
   end
 
   def type

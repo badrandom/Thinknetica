@@ -6,9 +6,7 @@ class Route
 
   def initialize(id, start_station, finish_station)
     @id = id
-    @start_station = start_station
-    @finish_station = finish_station
-    @stations = [@start_station, @finish_station]
+    @stations = [start_station, finish_station]
   end
 
   def add_station(station)
@@ -19,9 +17,4 @@ class Route
     @stations.delete(station)
   end
 
-  def print_stations
-    @stations.each do |station|
-      puts "#{station.name} Cargo:#{station.types[:cargo]}, Passenger:#{station.types[:passenger]}"
-    end
-  end
 end

@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 class Wagon
-  def initialize(mass_in_tons)
+  attr_reader :type
+  def initialize(mass_in_tons, type)
     @mass_in_tons = mass_in_tons
+    @type = type
   end
 end
 
 class CargoWagon < Wagon
   def initialize(capacity_in_tons = CAPACITY_IN_TONS, mass_in_tons = MASS_IN_TONS)
     @capacity_in_tons = capacity_in_tons
-    super(mass_in_tons)
+    super(mass_in_tons, 'Cargo')
   end
 
   private
@@ -22,7 +24,7 @@ end
 class PassengerWagon < Wagon
   def initialize(num_of_places = NUM_OF_PLACES, mass_in_tons = MASS_IN_TONS)
     @num_of_places = num_of_places
-    super(mass_in_tons)
+    super(mass_in_tons, 'Passenger')
   end
 
   private
