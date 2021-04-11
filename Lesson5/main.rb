@@ -2,4 +2,5 @@
 
 require_relative 'interface'
 
-Interface.start
+my_interface = Interface.new
+my_interface.start

@@ -7,10 +7,10 @@ require_relative 'wagon'
 
 class Interface
 
-  def self.start
-    @@stations = {}
-    @@routes = {}
-    @@trains = {}
+  def start
+    @stations = {}
+    @routes = {}
+    @trains = {}
 
     # Инструкцию по работе оставлю в ReadMe
     loop do
@@ -52,7 +52,7 @@ class Interface
 
   private
 
-  def self.instructions
+  def instructions
     puts "Enter a command"
     puts "'1' to add a new station"
     puts "'2' to add a new train"
@@ -70,47 +70,47 @@ class Interface
     puts "'Stop' to finish the program"
   end
 
-  def self.add_new_station
+  def add_new_station
     puts 'Enter its name'
     name = gets.chomp.capitalize
-    @@stations[name] = Station.new(name)
+    @stations[name] = Station.new(name)
   end
 
-  def self.add_new_train
+  def add_new_train
     puts 'Enter type: Passenger or Cargo'
     type = gets.chomp.capitalize
     if type == 'Passenger'
       puts 'Enter its number'
       number = gets.chomp
-      @@trains[number] = PassengerTrain.new(number)
+      @trains[number] = PassengerTrain.new(number)
     end
     if type == 'Cargo'
       puts 'Enter its number'
       number = gets.chomp
-      @@trains[number] = CargoTrain.new(number)
+      @trains[number] = CargoTrain.new(number)
     end
   end
 
-  def self.print_trains
-    @@trains.each_key { |number| puts "Number:#{number}, Type:#{@@trains[number].type}, Wagons:#{@@trains[number].num_of_wagons}" }
+  def print_trains
+    @trains.each_key { |number| puts "Number:#{number}, Type:#{@trains[number].type}, Wagons:#{@trains[number].num_of_wagons}" }
   end
 
-  def self.add_new_route
+  def add_new_route
     puts 'Enter route id'
     route_id = gets.chomp
     puts 'Enter first station'
     first = gets.chomp.capitalize
     puts 'Enter last station'
     last = gets.chomp.capitalize
-    @@routes[route_id] = Route.new(route_id, @@stations[first], @@stations[last])
+    @routes[route_id] = Route.new(route_id, @stations[first], @stations[last])
   end
 
   def self.print_routes
-    @@routes.each_key { |id| print "#{id}: First - #{@@routes[id].stations.first.name} Last - #{@@routes[id].stations.last.name}" }
+    @routes.each_key { |id| print "#{id}: First - #{@routes[id].stations.first.name} Last - #{@routes[id].stations.last.name}" }
     puts
   end
 
-  def self.modify_route
+  def modify_route
     puts 'Enter route id'
     id = gets.chomp
     puts 'Enter Add or Remove to add or remove a station'
@@ -119,71 +119,71 @@ class Interface
     station = gets.chomp.capitalize
     case command
     when 'Add'
-      @@routes[id].add_station(@@stations[station])
+      @routes[id].add_station(@stations[station])
     when 'Remove'
-      @@routes[id].remove_station(@@stations[station])
+      @routes[id].remove_station(@stations[station])
     end
   end
 
-  def self.set_train_on_route
+  def set_train_on_route
     puts 'Enter train number'
     train_number = gets.chomp
     puts 'Enter route id'
     route_id = gets.chomp
-    @@trains[train_number].add_route(@@routes[route_id]) if @@routes[route_id] && @@trains[train_number]
+    @trains[train_number].add_route(@routes[route_id]) if @routes[route_id] && @trains[train_number]
   end
 
-  def self.move_forward
+  def move_forward
     puts 'Enter train number'
     train_number = gets.chomp
-    if @@trains[train_number]
-      @@trains[train_number].move_forward
-      puts "Current: #{@@trains[train_number].current_station.name}"
-      puts "Previous: #{@@trains[train_number].previous_station.name if @@trains[train_number].previous_station.instance_of?(Station)}"
-      puts "Next: #{@@trains[train_number].next_station.name if @@trains[train_number].next_station.instance_of?(Station)}"
-      puts "Cargo trains on #{@@trains[train_number].current_station.name}: #{@@trains[train_number].current_station.types[:cargo]}"
-      puts "Passenger trains on #{@@trains[train_number].current_station.name}: #{@@trains[train_number].current_station.types[:passenger]}"
+    if @trains[train_number]
+      @trains[train_number].move_forward
+      puts "Current: #{@trains[train_number].current_station.name}"
+      puts "Previous: #{@trains[train_number].previous_station.name if @trains[train_number].previous_station.instance_of?(Station)}"
+      puts "Next: #{@trains[train_number].next_station.name if @trains[train_number].next_station.instance_of?(Station)}"
+      puts "Cargo trains on #{@trains[train_number].current_station.name}: #{@trains[train_number].current_station.types[:cargo]}"
+      puts "Passenger trains on #{@trains[train_number].current_station.name}: #{@trains[train_number].current_station.types[:passenger]}"
     end
   end
 
-  def self.move_back
+  def move_back
     puts 'Enter train number'
     train_number = gets.chomp
-    if @@trains[train_number]
-      @@trains[train_number].move_back
-      puts "Current: #{@@trains[train_number].current_station.name}"
-      puts "Previous: #{@@trains[train_number].previous_station.name if @@trains[train_number].previous_station.instance_of?(Station)}"
-      puts "Next: #{@@trains[train_number].next_station.name if @@trains[train_number].next_station.instance_of?(Station)}"
-      puts "Cargo trains on #{@@trains[train_number].current_station.name}: #{@@trains[train_number].current_station.types[:cargo]}"
-      puts "Passenger trains on #{@@trains[train_number].current_station.name}: #{@@trains[train_number].current_station.types[:passenger]}"
+    if @trains[train_number]
+      @trains[train_number].move_back
+      puts "Current: #{@trains[train_number].current_station.name}"
+      puts "Previous: #{@trains[train_number].previous_station.name if @trains[train_number].previous_station.instance_of?(Station)}"
+      puts "Next: #{@trains[train_number].next_station.name if @trains[train_number].next_station.instance_of?(Station)}"
+      puts "Cargo trains on #{@trains[train_number].current_station.name}: #{@trains[train_number].current_station.types[:cargo]}"
+      puts "Passenger trains on #{@trains[train_number].current_station.name}: #{@trains[train_number].current_station.types[:passenger]}"
     end
   end
 
-  def self.add_wagon
+  def add_wagon
     puts 'Enter train number'
     number = gets.chomp
-    if @@trains[number].type == 'Passenger'
-      @@trains[number].add_wagon(PassengerWagon.new)
+    if @trains[number].type == 'Passenger'
+      @trains[number].add_wagon(PassengerWagon.new)
     else
-      @@trains[number].add_wagon(CargoWagon.new)
+      @trains[number].add_wagon(CargoWagon.new)
     end
   end
 
-  def self.remove_wagon
+  def remove_wagon
     puts 'Enter train number'
     number = gets.chomp
-    @@trains[number].remove_wagon
+    @trains[number].remove_wagon
   end
 
-  def self.observe_stations_on_route
+  def observe_stations_on_route
     puts 'Enter route id'
     route_id = gets.chomp
-    @@routes[route_id].stations.each do |station|
+    @routes[route_id].stations.each do |station|
         puts "#{station.name} Cargo:#{station.types[:cargo]}, Passenger:#{station.types[:passenger]}"
     end
   end
 
-  def self.print_stations
-    @@stations.each_key { |name| puts name.to_s}
+  def print_stations
+    @stations.each_key { |name| puts name.to_s}
   end
 end

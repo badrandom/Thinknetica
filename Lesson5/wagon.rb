@@ -1,6 +1,8 @@
 # frozen_string_literal: true
+require_relative 'producers'
 
 class Wagon
+  include Producers
   attr_reader :type
   def initialize(mass_in_tons, type)
     @mass_in_tons = mass_in_tons

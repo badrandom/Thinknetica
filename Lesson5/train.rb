@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'instance_counter'
 require_relative 'wagon'
 class Train
+  include InstanceCounter
+
+  @@trains = []
   attr_accessor :current_speed
   attr_reader :number
 
@@ -11,6 +15,12 @@ class Train
     @number = number
     @current_speed = 0
     @wagons = []
+    register_instance
+    @@trains << self
+  end
+
+  def self.find(number)
+    @@trains.find { |train| train.number == number}
   end
 
   def add_route(route)
