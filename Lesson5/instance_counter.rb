@@ -6,9 +6,9 @@ module InstanceCounter
   end
 
   module ClassMethods
-
+    attr_writer :instances
     def instances
-      self.instance_variable_get(:@instances)
+      @instances ||= 0
     end
 
   end
@@ -16,15 +16,7 @@ module InstanceCounter
   module InstanceMethods
 
     def register_instance
-      instances = self.class.instance_variable_get(:@instances)
-      if instances
-        self.class.instance_variable_set(:@instances, instances + 1)
-      else
-        class << self
-          attr_accessor :instances
-        end
-        self.class.instance_variable_set(:@instances, 1)
-      end
+      self.class.instances += 1
     end
 
   end
