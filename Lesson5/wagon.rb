@@ -3,11 +3,31 @@ require_relative 'producers'
 
 class Wagon
   include Producers
+  include InstanceCounter
   attr_reader :type
   def initialize(mass_in_tons, type)
     @mass_in_tons = mass_in_tons
     @type = type
+    validate!
+    register_instance
+    #rescue Exception => e #убрал, тк в задании сказано убрать все puts. Исключение все равно будет выбрасываться, но не будет обработки
+    # e.message
   end
+
+  def valid?
+    validate!
+    true
+  rescue
+    false
+  end
+
+  protected
+
+  def validate!
+    raise ArgumentError, 'Mass in tons must be higher than 5' if @mass_in_tons < 5
+    raise ArgumentError, "Type must be 'Cargo' or 'Passenger'" if @type != 'Cargo' && @type != 'Passenger'
+  end
+
 end
 
 class CargoWagon < Wagon

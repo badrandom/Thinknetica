@@ -12,9 +12,10 @@ class Train
   @current_route
 
   def initialize(number)
-    @number = number
+    @number = number.upcase
     @current_speed = 0
     @wagons = []
+    validate!
     register_instance
     @@trains << self
   end
@@ -64,8 +65,17 @@ class Train
     if @current_speed == 0
       @wagons.pop
     else
-      puts "Stop the train!"
+      raise RuntimeError, 'Stop the train!'
     end
+  rescue RuntimeError => e
+    e.message
+  end
+
+  def valid?
+    validate!
+    true
+  rescue
+    false
   end
 
   protected
@@ -76,7 +86,15 @@ class Train
     if @current_speed == 0
       @wagons << wagon
     else
-      puts "Stop the train!"
+      raise RuntimeError, 'Stop the train!'
+    end
+  rescue RuntimeError => e
+    e.message
+  end
+
+  def validate!
+    if @number !~ /^[A-Z|\d]{3}[-]?[A-Z|\d]{2}$/i
+      raise ArgumentError, "Number must be like: 'xxx-xx'; where 'x' is a letter or number"
     end
   end
 

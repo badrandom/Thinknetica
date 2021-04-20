@@ -77,17 +77,32 @@ class Interface
   end
 
   def add_new_train
+    begin
     puts 'Enter type: Passenger or Cargo'
     type = gets.chomp.capitalize
-    if type == 'Passenger'
+    if type != 'Passenger' && type != 'Cargo'
+      raise ArgumentError, 'Wrong type'
+    end
+    rescue StandardError => e
+      puts e.message
+      retry
+    end
+    begin
       puts 'Enter its number'
+      puts "Number must be like: 'xxx-xx'; where 'x' is a letter or number"
+    if type == 'Passenger'
       number = gets.chomp
-      @trains[number] = PassengerTrain.new(number)
+      train = PassengerTrain.new(number)
+      @trains[number] = train
     end
     if type == 'Cargo'
-      puts 'Enter its number'
       number = gets.chomp
       @trains[number] = CargoTrain.new(number)
+    end
+      puts "Train with number #{number} was successfully created"
+    rescue StandardError => e
+      puts e.message
+      retry
     end
   end
 

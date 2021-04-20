@@ -13,8 +13,18 @@ class Station
   def initialize(name)
     @name = name
     @trains = []
+    validate!
     register_instance
     @@stations << self
+    #rescue StandardError => e #убрал, тк в задании сказано убрать все puts. Исключение все равно будет выбрасываться, но не будет обработки
+    #puts e.message
+  end
+
+  def valid?
+    validate!
+    true
+  rescue
+    false
   end
 
   def add_train(train)
@@ -35,6 +45,13 @@ class Station
       end
     end
     types
+  end
+
+  protected
+
+  def validate!
+    raise ArgumentError, "Name can't be nil" if @name.nil?
+    raise ArgumentError, "Name can't be empty" if @name.size.zero?
   end
 
 end
