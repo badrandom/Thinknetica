@@ -44,6 +44,14 @@ class Interface
         observe_stations_on_route
       when '13' # see all stations
         print_stations
+      when '14'
+        list_of_wagons
+      when '15'
+        list_of_trains
+      when '16'
+        take_seats
+      when '17'
+        put_some_cargo
       when 'Stop'
         break
       end
@@ -67,6 +75,10 @@ class Interface
     puts "'11' to choose a train and remove a wagon"
     puts "'12' to choose a route and observe its stations"
     puts "'13' to see all stations"
+    puts "'14' to choose a train and observe its wagons"
+    puts "'15' to choose a station and observe all trains on it"
+    puts "'16' to take some seats on a passenger train"
+    puts "'17' to put some cargo on a cargo train"
     puts "'Stop' to finish the program"
   end
 
@@ -175,13 +187,31 @@ class Interface
   end
 
   def add_wagon
-    puts 'Enter train number'
-    number = gets.chomp
-    if @trains[number].type == 'Passenger'
-      @trains[number].add_wagon(PassengerWagon.new)
-    else
-      @trains[number].add_wagon(CargoWagon.new)
+    begin
+      raise 'There are no trains!' if @trains.size.zero?
+      puts 'Enter train number'
+      number = gets.chomp
+      raise ArgumentError, 'Wrong number' if @trains[number].nil?
+    rescue ArgumentError => e
+      puts e.message
+      retry
+    rescue RuntimeError => e
+      puts e.message
+      return
     end
+    wagon_number = @trains[number].wagons.size + 1 #Генерирую номер вагона.
+    if @trains[number].type == 'Passenger'
+      puts 'Your train is passenger. You are able to create and add a passenger wagon.'
+      puts 'Please, enter its number of seats:'
+      num_of_seats = gets.chomp.to_i
+      wagon = PassengerWagon.new(num_of_seats, wagon_number)
+    else
+      puts 'Your train is cargo. You are able to create and add a cargo wagon.'
+      puts 'Please, enter its capacity in tons:'
+      capacity_in_tons = gets.chomp.to_i
+      wagon = CargoWagon.new(capacity_in_tons, wagon_number)
+    end
+    @trains[number].add_wagon(wagon)
   end
 
   def remove_wagon
@@ -200,5 +230,105 @@ class Interface
 
   def print_stations
     @stations.each_key { |name| puts name.to_s}
+  end
+
+  def list_of_wagons
+    begin
+      puts 'Enter train number:'
+      number = gets.chomp.upcase
+      raise 'There are no trains!' if @trains.size.nil?
+      raise ArgumentError, 'Wrong number' if @trains[number].nil?
+      puts "Train #{number}: "
+      @trains[number].each_wagon do |wagon|
+        print "Number: #{wagon.number} , Type: #{wagon.type}, "
+        if wagon.type == 'Passenger'
+          print "Free seats: #{wagon.free_seats}, "
+          print "Busy seats: #{wagon.busy_seats}"
+        else
+          print "Free capacity: #{wagon.free_capacity}, "
+          print "Busy capacity: #{wagon.busy_capacity}"
+        end
+        puts
+      end
+    rescue ArgumentError => e
+      puts e.message
+      retry
+    rescue RuntimeError => e
+      puts e.message
+      return
+    end
+  end
+
+  def list_of_trains
+    begin
+      raise RuntimeError, 'There are no stations yet!' if @stations.size.zero?
+      puts 'Please, enter the station name'
+      name = gets.chomp.capitalize
+      raise ArgumentError, 'There is no such a station!' if @stations[name].nil?
+    rescue ArgumentError => e
+      puts e.message
+      retry
+    rescue RuntimeError => e
+      puts e.message
+      return
+    end
+    station = @stations[name]
+    station.each_train do |train|
+      puts "Train #{train.number}: "
+      print "Type: #{train.type}, Number of wagons: #{train.wagons.size}."
+      puts
+    end
+  end
+
+  def take_seats
+    begin
+      raise 'There are no trains!' if @trains.size.zero?
+      puts 'Enter train number'
+      number = gets.chomp.upcase
+      raise 'There are no wagons!' if @trains[number].wagons.size.zero?
+      raise 'It is not a passenger train' if @trains[number].type != 'Passenger'
+      train = @trains[number]
+      print 'Wagons available: '
+      train.each_wagon do |wagon|
+        print "#{wagon.number}; "
+      end
+      puts
+      puts 'Choose a wagon'
+      wagon_number = gets.chomp.to_i - 1
+      puts "There are #{train.wagons[wagon_number].free_seats} seats available"
+      puts 'How many seats do you want to take?'
+      num_of_seats = gets.chomp.to_i
+      num_of_seats.times do
+        train.wagons[wagon_number].take_a_seat
+      end
+    rescue StandardError => e
+      puts e.message
+      return
+    end
+  end
+
+  def put_some_cargo
+    begin
+      raise 'There are no trains!' if @trains.size.zero?
+      puts 'Enter train number'
+      number = gets.chomp.upcase
+      raise 'It is not a cargo train' if @trains[number].type != 'Cargo'
+      raise 'There are no wagons!' if @trains[number].wagons.size.zero?
+      train = @trains[number]
+      print 'Wagons available: '
+      train.each_wagon do |wagon|
+        print "#{wagon.number}; "
+      end
+      puts
+      puts 'Choose a wagon'
+      wagon_number = gets.chomp.to_i - 1
+      puts "There are #{train.wagons[wagon_number].free_capacity} tons available"
+      puts 'How many tons do you want to put there?'
+      tons = gets.chomp.to_i
+      train.wagons[wagon_number].add_cargo(tons)
+    rescue StandardError => e
+      puts e.message
+      return
+    end
   end
 end

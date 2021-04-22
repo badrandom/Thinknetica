@@ -7,7 +7,7 @@ class Train
 
   @@trains = []
   attr_accessor :current_speed
-  attr_reader :number
+  attr_reader :number, :wagons
 
   @current_route
 
@@ -22,6 +22,10 @@ class Train
 
   def self.find(number)
     @@trains.find { |train| train.number == number}
+  end
+
+  def each_wagon(&block)
+    @wagons.each { |train| yield(train) }
   end
 
   def add_route(route)

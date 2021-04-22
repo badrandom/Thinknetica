@@ -20,6 +20,10 @@ class Station
     #puts e.message
   end
 
+  def each_train(&block)
+    @trains.each { |train| yield(train) }
+  end
+
   def valid?
     validate!
     true
