@@ -5,7 +5,6 @@ require_relative 'station'
 require_relative 'train'
 require_relative 'wagon'
 
-
 station1 = Station.new('First')
 station2 = Station.new('Second')
 
@@ -30,6 +29,6 @@ puts "There are #{PassengerWagon.instances} passenger wagons"
 puts "There are #{CargoWagon.instances} cargo wagons"
 station1.each_train do |train|
   print "Train #{train.number}: "
-  train.each_wagon { |wagon| print " #{wagon.type}"}
+  train.each_wagon { |wagon| print " #{wagon.type}" }
   puts
 end

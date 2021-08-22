@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require_relative 'instance_counter'
 
 class Station
@@ -16,18 +17,18 @@ class Station
     validate!
     register_instance
     @@stations << self
-    #rescue StandardError => e #убрал, тк в задании сказано убрать все puts. Исключение все равно будет выбрасываться, но не будет обработки
-    #puts e.message
+    # rescue StandardError => e #убрал, тк в задании сказано убрать все puts. Исключение все равно будет выбрасываться, но не будет обработки
+    # puts e.message
   end
 
   def each_train(&block)
-    @trains.each { |train| yield(train) }
+    @trains.each(&block)
   end
 
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 
@@ -40,7 +41,7 @@ class Station
   end
 
   def types
-    types = {passenger: 0, cargo: 0}
+    types = { passenger: 0, cargo: 0 }
     trains.each do |train|
       if train.type == 'Passenger'
         types[:passenger] += 1
@@ -57,5 +58,4 @@ class Station
     raise ArgumentError, "Name can't be nil" if @name.nil?
     raise ArgumentError, "Name can't be empty" if @name.size.zero?
   end
-
 end
