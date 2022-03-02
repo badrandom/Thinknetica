@@ -13,7 +13,8 @@ class Wagon
     @number = number
     validate!
     register_instance
-    # rescue Exception => e #убрал, тк в задании сказано убрать все puts. Исключение все равно будет выбрасываться, но не будет обработки
+    # rescue Exception => e #убрал, тк в задании сказано убрать все puts.
+    # Исключение все равно будет выбрасываться, но не будет обработки
     # e.message
   end
 
@@ -42,12 +43,10 @@ class CargoWagon < Wagon
   end
 
   def add_cargo(weight_in_tons)
-    if free_capacity >= weight_in_tons
-      @free_capacity -= weight_in_tons
-      @busy_capacity += weight_in_tons
-    else
-      raise StandardError, 'Not enough free capacity'
-    end
+    raise StandardError, 'Not enough free capacity' unless free_capacity >= weight_in_tons
+
+    @free_capacity -= weight_in_tons
+    @busy_capacity += weight_in_tons
   end
 
   # Решил не оставлять пустые классы. 68 тонн - средняя вместимость грузового вагона
@@ -65,12 +64,10 @@ class PassengerWagon < Wagon
   end
 
   def take_a_seat
-    if @free_seats.positive?
-      @free_seats -= 1
-      @busy_seats += 1
-    else
-      raise StandardError, 'Not enough free seats'
-    end
+    raise StandardError, 'Not enough free seats' unless @free_seats.positive?
+
+    @free_seats -= 1
+    @busy_seats += 1
   end
 
   # Судя по википедии, вместимость спального вагона - 18 мест.

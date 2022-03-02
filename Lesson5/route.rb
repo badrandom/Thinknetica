@@ -12,7 +12,8 @@ class Route
     @stations = [start_station, finish_station]
     validate!
     register_instance
-    # rescue Exception => e #убрал, тк в задании сказано убрать все puts. Исключение все равно будет выбрасываться, но не будет обработки
+    # rescue Exception => e #убрал, тк в задании сказано убрать все puts.
+    # Исключение все равно будет выбрасываться, но не будет обработки
     # puts e.message
   end
 

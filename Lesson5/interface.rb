@@ -7,13 +7,16 @@ require_relative 'wagon'
 
 class Interface
   INSTRUCTIONS = [
-    "Enter a command'", "'1' to add a new station", "'2' to add a new train", "'3' to see all trains",
-    "'4' to add a new route", "'5' to see all routes", "'6' to modify a route", "'7' to set train on a route",
-    "'8' to choose a train to move forward", "'9' to choose a train to move back", "'10' to choose a train and add a wagon",
-    "'11' to choose a train and remove a wagon", "'12' to choose a route and observe its stations", "'13' to see all stations",
-    "'14' to choose a train and observe its wagons", "'15' to choose a station and observe all trains on it",
-    "'16' to take some seats on a passenger train", "'17' to put some cargo on a cargo train", "'Stop' to finish the program"
+    "Enter a command'", "'1' to add a new station", "'2' to add a new train",
+    "'3' to see all trains", "'4' to add a new route", "'5' to see all routes",
+    "'6' to modify a route", "'7' to set train on a route", "'8' to choose a train to move forward",
+    "'9' to choose a train to move back", "'10' to choose a train and add a wagon",
+    "'11' to choose a train and remove a wagon", "'12' to choose a route and observe its stations",
+    "'13' to see all stations", "'14' to choose a train and observe its wagons",
+    "'15' to choose a station and observe all trains on it", "'16' to take some seats on a passenger train",
+    "'17' to put some cargo on a cargo train", "'Stop' to finish the program"
   ].freeze
+
   def start
     @stations = {}
     @routes = {}
@@ -64,6 +67,13 @@ class Interface
     end
   end
 
+  def self.print_routes
+    @routes.each_key do |id|
+      print "#{id}: First - #{@routes[id].stations.first.name} Last - #{@routes[id].stations.last.name}"
+    end
+    puts
+  end
+
   private
 
   def instructions
@@ -86,22 +96,25 @@ class Interface
       retry
     end
     begin
-      puts 'Enter its number'
-      puts "Number must be like: 'xxx-xx'; where 'x' is a letter or number"
-      if type == 'Passenger'
-        number = gets.chomp
-        train = PassengerTrain.new(number)
-        @trains[number] = train
-      end
-      if type == 'Cargo'
-        number = gets.chomp
-        @trains[number] = CargoTrain.new(number)
-      end
-      puts "Train with number #{number} was successfully created"
+      generate_train(type)
     rescue StandardError => e
       puts e.message
       retry
     end
+  end
+
+  def generate_train(type)
+    puts 'Enter its number'
+    puts "Number must be like: 'xxx-xx'; where 'x' is a letter or number"
+    if type == 'Passenger'
+      number = gets.chomp
+      @trains[number] = PassengerTrain.new(number)
+    end
+    if type == 'Cargo'
+      number = gets.chomp
+      @trains[number] = CargoTrain.new(number)
+    end
+    puts "Train with number #{number} was successfully created"
   end
 
   def print_trains
@@ -118,11 +131,6 @@ class Interface
     puts 'Enter last station'
     last = gets.chomp.capitalize
     @routes[route_id] = Route.new(route_id, @stations[first], @stations[last])
-  end
-
-  def self.print_routes
-    @routes.each_key { |id| print "#{id}: First - #{@routes[id].stations.first.name} Last - #{@routes[id].stations.last.name}" }
-    puts
   end
 
   def modify_route
@@ -151,35 +159,19 @@ class Interface
   def move_forward
     puts 'Enter train number'
     train_number = gets.chomp
-    if @trains[train_number]
-      @trains[train_number].move_forward
-      puts "Current: #{@trains[train_number].current_station.name}"
-      puts "Previous: #{if @trains[train_number].previous_station.instance_of?(Station)
-                          @trains[train_number].previous_station.name
-                        end}"
-      puts "Next: #{if @trains[train_number].next_station.instance_of?(Station)
-                      @trains[train_number].next_station.name
-                    end}"
-      puts "Cargo trains on #{@trains[train_number].current_station.name}: #{@trains[train_number].current_station.types[:cargo]}"
-      puts "Passenger trains on #{@trains[train_number].current_station.name}: #{@trains[train_number].current_station.types[:passenger]}"
-    end
+    return unless @trains[train_number]
+
+    @trains[train_number].move_forward
+    output(train_number)
   end
 
   def move_back
     puts 'Enter train number'
     train_number = gets.chomp
-    if @trains[train_number]
-      @trains[train_number].move_back
-      puts "Current: #{@trains[train_number].current_station.name}"
-      puts "Previous: #{if @trains[train_number].previous_station.instance_of?(Station)
-                          @trains[train_number].previous_station.name
-                        end}"
-      puts "Next: #{if @trains[train_number].next_station.instance_of?(Station)
-                      @trains[train_number].next_station.name
-                    end}"
-      puts "Cargo trains on #{@trains[train_number].current_station.name}: #{@trains[train_number].current_station.types[:cargo]}"
-      puts "Passenger trains on #{@trains[train_number].current_station.name}: #{@trains[train_number].current_station.types[:passenger]}"
-    end
+    return unless @trains[train_number]
+
+    @trains[train_number].move_back
+    output(train_number)
   end
 
   def add_wagon
@@ -196,19 +188,22 @@ class Interface
       puts e.message
       return
     end
+    @trains[number].add_wagon(generate_wagon(number))
+  end
+
+  def generate_wagon(number)
     wagon_number = @trains[number].wagons.size + 1 # Генерирую номер вагона.
     if @trains[number].type == 'Passenger'
       puts 'Your train is passenger. You are able to create and add a passenger wagon.'
       puts 'Please, enter its number of seats:'
       num_of_seats = gets.chomp.to_i
-      wagon = PassengerWagon.new(num_of_seats, wagon_number)
+      PassengerWagon.new(num_of_seats, wagon_number)
     else
       puts 'Your train is cargo. You are able to create and add a cargo wagon.'
       puts 'Please, enter its capacity in tons:'
       capacity_in_tons = gets.chomp.to_i
-      wagon = CargoWagon.new(capacity_in_tons, wagon_number)
+      CargoWagon.new(capacity_in_tons, wagon_number)
     end
-    @trains[number].add_wagon(wagon)
   end
 
   def remove_wagon
@@ -327,5 +322,16 @@ class Interface
   rescue StandardError => e
     puts e.message
     nil
+  end
+
+  def output(train_number)
+    current_station = @trains[train_number].current_station
+    previous_station = @trains[train_number].previous_station
+    next_station = @trains[train_number].next_station
+    puts "Current: #{current_station.name}"
+    puts "Previous: #{previous_station.name if previous_station.instance_of?(Station)}"
+    puts "Next: #{next_station.name if next_station.instance_of?(Station)}"
+    puts "Cargo trains on #{current_station.name}: #{current_station.types[:cargo]}"
+    puts "Passenger trains on #{current_station.name}: #{current_station.types[:passenger]}"
   end
 end

@@ -13,7 +13,7 @@ class Train
     @number = number.upcase
     @current_speed = 0
     @wagons = []
-    validate!
+    valid?
     register_instance
     @@trains << self
   end
@@ -82,23 +82,22 @@ class Train
 
   protected
 
-  # Метод, который я переопределю в классе потомке. Там проведу проверку на соответствие типу и вызову оригинал посредством super.
+  # Метод, который я переопределю в классе потомке.
+  # Там проведу проверку на соответствие типу и вызову оригинал посредством super.
   # Т.к. Буду вызывать его из класса потомка, то помещаю в секцию protected.
   # Нет смысла проводить проверку на соответствие типа для метода удаления вагона, поэтому оставляю его публичным.
   def add_wagon(wagon)
-    if @current_speed.zero?
-      @wagons << wagon
-    else
-      raise 'Stop the train!'
-    end
+    raise 'Stop the train!' unless @current_speed.zero?
+
+    @wagons << wagon
   rescue RuntimeError => e
     e.message
   end
 
   def validate!
-    if @number !~ /^[A-Z|\d]{3}-?[A-Z|\d]{2}$/i
-      raise ArgumentError, "Number must be like: 'xxx-xx'; where 'x' is a letter or number"
-    end
+    return unless @number !~ /^[A-Z|\d]{3}-?[A-Z|\d]{2}$/i
+
+    raise ArgumentError, "Number must be like: 'xxx-xx'; where 'x' is a letter or number"
   end
 end
 

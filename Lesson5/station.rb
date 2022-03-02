@@ -17,7 +17,8 @@ class Station
     validate!
     register_instance
     @@stations << self
-    # rescue StandardError => e #убрал, тк в задании сказано убрать все puts. Исключение все равно будет выбрасываться, но не будет обработки
+    # rescue StandardError => e #убрал, тк в задании сказано убрать все puts.
+    # Исключение все равно будет выбрасываться, но не будет обработки
     # puts e.message
   end
 
