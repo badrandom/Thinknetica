@@ -67,7 +67,7 @@ class Interface
     end
   end
 
-  def self.print_routes
+  def print_routes
     @routes.each_key do |id|
       print "#{id}: First - #{@routes[id].stations.first.name} Last - #{@routes[id].stations.last.name}"
     end
@@ -84,6 +84,7 @@ class Interface
     puts 'Enter its name'
     name = gets.chomp.capitalize
     @stations[name] = Station.new(name)
+
   end
 
   def add_new_train
@@ -99,7 +100,7 @@ class Interface
       generate_train(type)
     rescue StandardError => e
       puts e.message
-      retry
+    retry
     end
   end
 
@@ -131,6 +132,9 @@ class Interface
     puts 'Enter last station'
     last = gets.chomp.capitalize
     @routes[route_id] = Route.new(route_id, @stations[first], @stations[last])
+  rescue StandardError => e
+    puts e.message
+    retry
   end
 
   def modify_route

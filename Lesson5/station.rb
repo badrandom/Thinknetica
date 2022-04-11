@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require_relative 'instance_counter'
+require_relative 'validation'
 
 class Station
   include InstanceCounter
+  include Validation
   @@stations = []
   attr_reader :trains, :name
+  validate :name, :presence
 
   def self.all
     @@stations
@@ -14,23 +17,13 @@ class Station
   def initialize(name)
     @name = name
     @trains = []
-    validate!
     register_instance
     @@stations << self
-    # rescue StandardError => e #убрал, тк в задании сказано убрать все puts.
-    # Исключение все равно будет выбрасываться, но не будет обработки
-    # puts e.message
+    valid?
   end
 
   def each_train(&block)
     @trains.each(&block)
-  end
-
-  def valid?
-    validate!
-    true
-  rescue StandardError
-    false
   end
 
   def add_train(train)
@@ -53,10 +46,4 @@ class Station
     types
   end
 
-  protected
-
-  def validate!
-    raise ArgumentError, "Name can't be nil" if @name.nil?
-    raise ArgumentError, "Name can't be empty" if @name.size.zero?
-  end
 end

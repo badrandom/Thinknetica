@@ -26,7 +26,7 @@ class Route
   end
 
   def valid?
-    validate!
+    validate_route!
     true
   rescue StandardError
     false
@@ -34,7 +34,7 @@ class Route
 
   protected
 
-  def validate!
+  def validate_route!
     raise ArgumentError, "Route can't be zero" if @id.to_i.zero?
     raise ArgumentError, "Route can't be nil" if @id.nil?
     raise ArgumentError, 'There must be two stations' if @stations[0].nil? || stations[1].nil?

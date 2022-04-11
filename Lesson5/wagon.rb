@@ -8,28 +8,16 @@ class Wagon
   attr_reader :type
   attr_accessor :number
 
+
   def initialize(type, number)
     @type = type
     @number = number
-    validate!
     register_instance
     # rescue Exception => e #убрал, тк в задании сказано убрать все puts.
     # Исключение все равно будет выбрасываться, но не будет обработки
     # e.message
   end
 
-  def valid?
-    validate!
-    true
-  rescue StandardError
-    false
-  end
-
-  protected
-
-  def validate!
-    raise ArgumentError, "Type must be 'Cargo' or 'Passenger'" if @type != 'Cargo' && @type != 'Passenger'
-  end
 end
 
 class CargoWagon < Wagon
@@ -54,6 +42,7 @@ class CargoWagon < Wagon
 end
 
 class PassengerWagon < Wagon
+  include Validation
   attr_reader :free_seats, :busy_seats, :num_of_seats
 
   def initialize(num_of_seats = NUM_OF_SEATS, number = 0)

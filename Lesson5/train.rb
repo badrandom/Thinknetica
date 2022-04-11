@@ -1,7 +1,9 @@
 # frozen_string_literal: true
+# "Number must be like: 'xxx-xx'; where 'x' is a letter or number"
 
 require_relative 'instance_counter'
 require_relative 'wagon'
+require_relative 'validation'
 class Train
   include InstanceCounter
 
@@ -9,11 +11,12 @@ class Train
   attr_accessor :current_speed, :current_route
   attr_reader :number, :wagons
 
+
   def initialize(number)
     @number = number.upcase
+    validate!
     @current_speed = 0
     @wagons = []
-    valid?
     register_instance
     @@trains << self
   end
@@ -73,13 +76,6 @@ class Train
     e.message
   end
 
-  def valid?
-    validate!
-    true
-  rescue StandardError
-    false
-  end
-
   protected
 
   # Метод, который я переопределю в классе потомке.
@@ -94,15 +90,18 @@ class Train
     e.message
   end
 
-  def validate!
-    return unless @number !~ /^[A-Z|\d]{3}-?[A-Z|\d]{2}$/i
-
-    raise ArgumentError, "Number must be like: 'xxx-xx'; where 'x' is a letter or number"
-  end
 end
 
 # Class for passenger type
 class PassengerTrain < Train
+  include Validation
+  validate :number, :format, /^[A-Z|\d]{3}-?[A-Z|\d]{2}$/i
+
+  def initialize(number)
+    super
+    valid?
+  end
+
   def add_wagon(wagon)
     super(wagon) if wagon.type == 'Passenger'
   end
@@ -114,6 +113,14 @@ end
 
 # Class for cargo type
 class CargoTrain < Train
+  include Validation
+  validate :number, :format, /^[A-Z|\d]{3}-?[A-Z|\d]{2}$/i
+
+  def initialize(number)
+    super
+    valid?
+  end
+
   def add_wagon(wagon)
     super(wagon) if wagon.type == 'Cargo'
   end
