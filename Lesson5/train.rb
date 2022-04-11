@@ -14,7 +14,6 @@ class Train
 
   def initialize(number)
     @number = number.upcase
-    validate!
     @current_speed = 0
     @wagons = []
     register_instance
@@ -95,7 +94,7 @@ end
 # Class for passenger type
 class PassengerTrain < Train
   include Validation
-  validate :number, :format, /^[A-Z|\d]{3}-?[A-Z|\d]{2}$/i
+  validate :number, :format, /^[A-Z|\d]{3}[-][A-Z|\d]{2}$/i
 
   def initialize(number)
     super
@@ -114,7 +113,7 @@ end
 # Class for cargo type
 class CargoTrain < Train
   include Validation
-  validate :number, :format, /^[A-Z|\d]{3}-?[A-Z|\d]{2}$/i
+  validate :number, :format, /^[A-Z|\d]{3}[-][A-Z|\d]{2}$/i
 
   def initialize(number)
     super

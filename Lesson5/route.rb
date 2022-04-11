@@ -10,7 +10,7 @@ class Route
   def initialize(id, start_station, finish_station)
     @id = id
     @stations = [start_station, finish_station]
-    validate!
+    valid?
     register_instance
     # rescue Exception => e #убрал, тк в задании сказано убрать все puts.
     # Исключение все равно будет выбрасываться, но не будет обработки
@@ -26,16 +26,17 @@ class Route
   end
 
   def valid?
-    validate_route!
-    true
-  rescue StandardError
-    false
+    if validate!
+      true
+    else
+      false
+    end
   end
 
   protected
 
-  def validate_route!
-    raise ArgumentError, "Route can't be zero" if @id.to_i.zero?
+  def validate!
+    raise ArgumentError, "Route can't be zero" if @id.to_i == 0
     raise ArgumentError, "Route can't be nil" if @id.nil?
     raise ArgumentError, 'There must be two stations' if @stations[0].nil? || stations[1].nil?
   end

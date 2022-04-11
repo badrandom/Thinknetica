@@ -84,7 +84,9 @@ class Interface
     puts 'Enter its name'
     name = gets.chomp.capitalize
     @stations[name] = Station.new(name)
-
+  rescue StandardError => e
+    puts e.message
+    retry
   end
 
   def add_new_train

@@ -23,11 +23,11 @@ module Validation
     end
 
     def valid?
-      validate!
-      true
-    rescue StandardError => e
-      puts e.message
-      false
+      if validate!
+        true
+      else
+        false
+      end
     end
 
     def validate_presence(name, *args)
