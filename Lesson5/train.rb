@@ -10,7 +10,7 @@ class Train
   include Accessors
 
   @@trains = []
-  attr_accessor :current_speed
+  strong_attr_accessor :current_speed, :Integer
   attr_reader :number, :wagons
 
   def initialize(number)
