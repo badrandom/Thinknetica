@@ -4,13 +4,14 @@
 require_relative 'instance_counter'
 require_relative 'wagon'
 require_relative 'validation'
+require_relative 'accessors'
 class Train
   include InstanceCounter
+  include Accessors
 
   @@trains = []
-  attr_accessor :current_speed, :current_route
+  attr_accessor :current_speed
   attr_reader :number, :wagons
-
 
   def initialize(number)
     @number = number.upcase

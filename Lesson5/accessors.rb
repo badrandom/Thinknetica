@@ -24,19 +24,14 @@ module Accessors
       end
     end
 
-    def strong_attr_accessor (name, type)
-      var_name = "@#{name}".to_sym
+    def strong_attr_accessor(name, type)
       define_method(name) do
-        instance_variable_get(var_name)
+        instance_variable_get("@#{name}")
       end
 
-      define_method("#{name}=".to_sym) do |v|
-        begin
-          raise TypeError, 'Wrong type!' unless v.class.to_s.downcase == type.to_s.downcase
-          instance_variable_set(var_name, v)
-        rescue TypeError => e
-          puts e.message
-        end
+      define_method("#{name}=") do |value|
+        raise ArgumentError, "Invalid Type. It must be #{type.to_s}" unless value.class.to_s == type.to_s
+        instance_variable_set("@#{name}", value)
       end
     end
   end

@@ -24,7 +24,6 @@ class Interface
     # Инструкцию по работе оставлю в ReadMe
     loop do
       instructions
-
       command = gets.chomp
       case command
       when '1' # add a new station
@@ -75,6 +74,7 @@ class Interface
   end
 
   private
+
 
   def instructions
     INSTRUCTIONS.each { |i| puts i }
